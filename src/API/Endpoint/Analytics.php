@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Dakword\WBSeller\API\Endpoint;
 
 use Dakword\WBSeller\API\AbstractEndpoint;
+use Dakword\WBSeller\Exception\ApiClientException;
 use DateTime;
 use InvalidArgumentException;
 
@@ -256,13 +257,19 @@ class Analytics extends AbstractEndpoint
             'dateFrom' => $dateFrom->format(DATE_RFC3339),
             'dateTo' => $dateTo->format(DATE_RFC3339),
         ]);
+        $isReportReady = false;
         for ($i = 0; $i < self::REQUEST_QTY; $i++) { 
             sleep(self::REQUEST_TIMEOUT);
             $status = $this->getRequest("/api/v1/paid_storage/tasks/{$taskRequest->data->taskId}/status");
             if ($status->data->status == 'done') {
+                $isReportReady = true;
                 break;
             }
         }
+        if (!$isReportReady) {
+            throw new ApiClientException('Не удалось получить отчет по платному хранению');
+        }
+
         return $this->getRequest("/api/v1/paid_storage/tasks/{$taskRequest->data->taskId}/download");
     }
     
