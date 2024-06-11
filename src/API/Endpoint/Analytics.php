@@ -5,11 +5,14 @@ declare(strict_types=1);
 namespace Dakword\WBSeller\API\Endpoint;
 
 use Dakword\WBSeller\API\AbstractEndpoint;
+use Dakword\WBSeller\Exception\ApiClientException;
 use DateTime;
 use InvalidArgumentException;
 
 class Analytics extends AbstractEndpoint
 {
+    private const REQUEST_QTY = 12;
+    private const REQUEST_TIMEOUT = 5;
 
     /**
      * Получение статистики КТ за выбранный период,
@@ -236,6 +239,38 @@ class Analytics extends AbstractEndpoint
         return $this->postRequest('/api/v1/analytics/excise-report?dateFrom=' . $dateFrom->format('Y-m-d') . '&dateTo=' . $dateTo->format('Y-m-d'), [
             'countries' => $countries,
         ]);
+    }
+
+    /**
+     * Платное хранение
+     * 
+     * Будет выгружена информация о платном хранении
+     * 
+     * @param DateTime $dateFrom   Начало периода
+     * @param DateTime $dateTo     Конец периода
+     * 
+     * @return array { data: [object, object, ...] }
+     */
+    public function paidStorageReports(DateTime $dateFrom, DateTime $dateTo): array
+    {
+        $taskRequest = $this->getRequest('/api/v1/paid_storage', [
+            'dateFrom' => $dateFrom->format(DATE_RFC3339),
+            'dateTo' => $dateTo->format(DATE_RFC3339),
+        ]);
+        $isReportReady = false;
+        for ($i = 0; $i < self::REQUEST_QTY; $i++) { 
+            sleep(self::REQUEST_TIMEOUT);
+            $status = $this->getRequest("/api/v1/paid_storage/tasks/{$taskRequest->data->taskId}/status");
+            if ($status->data->status == 'done') {
+                $isReportReady = true;
+                break;
+            }
+        }
+        if (!$isReportReady) {
+            throw new ApiClientException('Не удалось получить отчет по платному хранению');
+        }
+
+        return $this->getRequest("/api/v1/paid_storage/tasks/{$taskRequest->data->taskId}/download");
     }
     
     private function getFromFilter(string $param, array $filter)
