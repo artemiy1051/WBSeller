@@ -291,6 +291,20 @@ class Analytics extends AbstractEndpoint
         ]);
     }
 
+    /**
+     * Самовыкупы
+     * 
+     * Возвращает отчёт по удержаниям за самовыкупы .
+     * 
+     * @param DateTime $date Дата, которая входит в отчётный период
+     * 
+     * @return array [object, object, ...]
+     */
+    public function antifraudDetails(DateTime $date = null)
+    {
+        return $this->getRequest('/api/v1/analytics/antifraud-details' . ($date ? '?date=' . $date->format(DATE_RFC3339) : ''));
+    }
+
     private function getFromFilter(string $param, array $filter)
     {
         $key = strtolower($param);
