@@ -272,7 +272,25 @@ class Analytics extends AbstractEndpoint
 
         return $this->getRequest("/api/v1/paid_storage/tasks/{$taskRequest->data->taskId}/download");
     }
-    
+
+    /**
+     * Платная приёмка
+     * 
+     * Будет выгружена информация о платной приёмке .
+     * 
+     * @param DateTime $dateFrom  Дата начала отчётного периода
+     * @param DateTime $dateTo    Дата окончания отчётного периода
+     * 
+     * @return array [object, object, ...]
+     */
+    public function acceptanceReports(DateTime $dateFrom, DateTime $dateTo)
+    {
+        return $this->getRequest('/api/v1/analytics/acceptance-report', [
+            'dateFrom' => $dateFrom->format(DATE_RFC3339),
+            'dateTo' => $dateTo->format(DATE_RFC3339),
+        ]);
+    }
+
     private function getFromFilter(string $param, array $filter)
     {
         $key = strtolower($param);
