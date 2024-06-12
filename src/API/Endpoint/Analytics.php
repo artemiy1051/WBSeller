@@ -305,6 +305,24 @@ class Analytics extends AbstractEndpoint
         return $this->getRequest('/api/v1/analytics/antifraud-details' . ($date ? '?date=' . $date->format(DATE_RFC3339) : ''));
     }
 
+    /**
+     * Маркировка товара
+     * 
+     * Возвращает отчёт о штрафах за отсутствие обязательной маркировки товаров.
+     * 
+     * @param DateTime $dateFrom  Дата начала отчётного периода
+     * @param DateTime $dateTo    Дата окончания отчётного периода
+     * 
+     * @return array [object, object, ...]
+     */
+    public function goodsLabeling(DateTime $dateFrom, DateTime $dateTo)
+    {
+        return $this->getRequest('/api/v1/analytics/goods-labeling', [
+            'dateFrom' => $dateFrom->format(DATE_RFC3339),
+            'dateTo' => $dateTo->format(DATE_RFC3339),
+        ]);
+    }
+
     private function getFromFilter(string $param, array $filter)
     {
         $key = strtolower($param);
