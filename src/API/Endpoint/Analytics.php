@@ -323,6 +323,24 @@ class Analytics extends AbstractEndpoint
         ]);
     }
 
+    /**
+     * Смена характеристик
+     * 
+     * Возвращает отчёт об удержаниях за смену характеристик товара.
+     * 
+     * @param DateTime $dateFrom  Дата начала отчётного периода
+     * @param DateTime $dateTo    Дата окончания отчётного периода
+     * 
+     * @return array [object, object, ...]
+     */
+    public function characteristicsChange(DateTime $dateFrom, DateTime $dateTo)
+    {
+        return $this->getRequest('/api/v1/analytics/characteristics-change', [
+            'dateFrom' => $dateFrom->format(DATE_RFC3339),
+            'dateTo' => $dateTo->format(DATE_RFC3339),
+        ]);
+    }
+
     private function getFromFilter(string $param, array $filter)
     {
         $key = strtolower($param);
