@@ -7,6 +7,7 @@ namespace Dakword\WBSeller\API\Endpoint;
 use Dakword\WBSeller\API\AbstractEndpoint;
 use Dakword\WBSeller\Enum\AdvertStatus;
 use Dakword\WBSeller\Enum\AdvertType;
+use DateTime;
 use InvalidArgumentException;
 
 class Adv extends AbstractEndpoint
@@ -355,6 +356,24 @@ class Adv extends AbstractEndpoint
     public function balance(): object
     {
         return $this->getRequest('/adv/v1/balance');
+    }
+
+    /**
+     * Получение истории затрат
+     * 
+     * Метод позволяет получать историю затрат
+     * 
+     * @param DateTime $dateFrom  Начало интервала
+     * @param DateTime $dateTo    Конец интервала
+     * 
+     * @return array
+     */
+    public function upd(DateTime $dateFrom, DateTime $dateTo): array
+    {
+        return $this->getRequest('/adv/v1/upd', [
+            'from' => $dateFrom->format('Y-m-d'),
+            'to' => $dateTo->format('Y-m-d'),
+        ]);
     }
 
     private function checkType(int $type, array $types = [])
